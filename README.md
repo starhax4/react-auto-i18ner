@@ -2,9 +2,18 @@
 
 🚀 **Automated React i18n transformation tool** that extracts texts, creates translation files, and transforms JSX components end-to-end.
 
-**✨ Works with both JavaScript and TypeScript projects!**
+**✨ Works with React, Next.js 13+, and TypeScript/JavaScript projects!**
 
 **🎯 One Command - Zero Configuration: `npx react-auto-i18ner`**
+
+## 🌟 **Perfect for Next.js 14+ App Router!**
+
+- ✅ **App Router Support**: Automatically detects and transforms `app/` directory
+- ✅ **Pages Router Support**: Works with traditional `pages/` directory
+- ✅ **Server Components**: Handles Next.js Server Components
+- ✅ **Client Components**: Works with 'use client' components
+- ✅ **Smart Locales**: Places translation files in the right location (`app/locales/` or `locales/`)
+- ✅ **Route Handlers**: Skips API routes automatically
 
 [![npm version](https://badge.fury.io/js/react-auto-i18ner.svg)](https://badge.fury.io/js/react-auto-i18ner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

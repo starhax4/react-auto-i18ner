@@ -219,11 +219,196 @@ export class ConfigManager {
     ];
   }
 
+  /**
+   * Intelligently detect the source directory for React/Next.js projects
+   */
+  private detectSourceDirectory(): string {
+    const projectRoot = process.cwd();
+
+    // Check for Next.js 14+ App Router first
+    if (this.isNextJsAppRouter()) {
+      return './app';
+    }
+
+    // Check for Next.js Pages Router
+    if (this.isNextJsPagesRouter()) {
+      return './pages';
+    }
+
+    // Check standard React patterns
+    const possibleDirs = [
+      './src', // Standard React/Create React App
+      './components', // Component-only projects
+      './', // Root level
+    ];
+
+    for (const dir of possibleDirs) {
+      const fullPath = path.resolve(projectRoot, dir);
+      if (fs.existsSync(fullPath)) {
+        const hasComponents = this.hasReactComponents(fullPath);
+        if (hasComponents) {
+          return dir;
+        }
+      }
+    }
+
+    // Default fallback
+    return './src';
+  }
+
+  /**
+   * Check if this is a Next.js App Router project (13+)
+   */
+  private isNextJsAppRouter(): boolean {
+    const projectRoot = process.cwd();
+    const appDir = path.join(projectRoot, 'app');
+
+    if (!fs.existsSync(appDir)) return false;
+
+    // Check for typical App Router files
+    const appRouterFiles = [
+      'layout.tsx',
+      'layout.jsx',
+      'layout.ts',
+      'layout.js',
+      'page.tsx',
+      'page.jsx',
+      'page.ts',
+      'page.js',
+    ];
+
+    return appRouterFiles.some((file) =>
+      fs.existsSync(path.join(appDir, file))
+    );
+  }
+
+  /**
+   * Check if this is a Next.js Pages Router project
+   */
+  private isNextJsPagesRouter(): boolean {
+    const projectRoot = process.cwd();
+    const pagesDir = path.join(projectRoot, 'pages');
+
+    if (!fs.existsSync(pagesDir)) return false;
+
+    // Check for typical Pages Router files
+    return this.hasReactComponents(pagesDir);
+  }
+
+  /**
+   * Check if this is a Next.js project at all
+   */
+  private isNextJsProject(): boolean {
+    const projectRoot = process.cwd();
+    const packageJsonPath = path.join(projectRoot, 'package.json');
+
+    if (!fs.existsSync(packageJsonPath)) return false;
+
+    try {
+      const packageJson = fs.readJsonSync(packageJsonPath);
+      const allDeps = {
+        ...packageJson.dependencies,
+        ...packageJson.devDependencies,
+      };
+
+      return !!allDeps.next;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if a directory contains React components
+   */
+  private hasReactComponents(dirPath: string): boolean {
+    try {
+      const glob = require('glob');
+      const pattern = path.join(dirPath, '**/*.{tsx,jsx}');
+      const files = glob.sync(pattern, {
+        ignore: [
+          '**/node_modules/**',
+          '**/dist/**',
+          '**/build/**',
+          '**/.next/**',
+        ],
+      });
+      return files.length > 0;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Get enhanced default config with smart directory detection
+   */
+  private getSmartDefaultConfig(): I18nConfig {
+    const detectedSrcDir = this.detectSourceDirectory();
+    const isNextJs = this.isNextJsProject();
+    const isAppRouter = this.isNextJsAppRouter();
+    const baseConfig = this.getDefaultConfig();
+
+    // Adjust paths based on detected structure
+    let outputDir = `${detectedSrcDir}/locales`;
+    let includePatterns = ['**/*.{tsx,jsx}'];
+    let excludePatterns = [...baseConfig.exclude];
+
+    if (isNextJs) {
+      // Next.js specific configurations
+      excludePatterns.push(
+        '**/.next/**', // Next.js build directory
+        '**/out/**', // Next.js export directory
+        '**/public/**', // Next.js public assets
+        '**/api/**', // API routes (usually no UI text)
+        '**/middleware.*' // Middleware files
+      );
+
+      if (isAppRouter) {
+        // App Router specific patterns
+        includePatterns = [
+          '**/page.{tsx,jsx}', // Page components
+          '**/layout.{tsx,jsx}', // Layout components
+          '**/loading.{tsx,jsx}', // Loading components
+          '**/error.{tsx,jsx}', // Error components
+          '**/not-found.{tsx,jsx}', // 404 components
+          '**/global-error.{tsx,jsx}', // Global error components
+          '**/template.{tsx,jsx}', // Template components
+          '**/default.{tsx,jsx}', // Default components
+          '**/components/**/*.{tsx,jsx}', // Regular components
+          '**/*.{tsx,jsx}', // Catch-all for other components
+        ];
+
+        // For App Router, locales should be accessible from the app directory
+        outputDir = './app/locales';
+      } else {
+        // Pages Router specific patterns
+        includePatterns = [
+          '**/pages/**/*.{tsx,jsx}', // Page components
+          '**/components/**/*.{tsx,jsx}', // Components
+          '**/*.{tsx,jsx}', // Other components
+        ];
+
+        // For Pages Router, traditional structure
+        outputDir = './locales';
+      }
+    }
+
+    return {
+      ...baseConfig,
+      srcDir: detectedSrcDir,
+      outputDir: outputDir,
+      include: includePatterns,
+      exclude: excludePatterns,
+    };
+  }
+
   public loadConfig(configPath?: string): I18nConfig {
     if (configPath && fs.existsSync(configPath)) {
       try {
         const userConfig = fs.readJsonSync(configPath);
-        this.config = this.mergeConfigs(this.getDefaultConfig(), userConfig);
+        this.config = this.mergeConfigs(
+          this.getSmartDefaultConfig(),
+          userConfig
+        );
       } catch (error) {
         console.warn(
           `Warning: Could not load config from ${configPath}, using defaults`
@@ -250,7 +435,10 @@ export class ConfigManager {
             }
 
             if (config) {
-              this.config = this.mergeConfigs(this.getDefaultConfig(), config);
+              this.config = this.mergeConfigs(
+                this.getSmartDefaultConfig(),
+                config
+              );
               console.log(`📋 Loaded configuration from ${path}`);
               break;
             }
@@ -261,6 +449,8 @@ export class ConfigManager {
       }
     }
 
+    // No config file found, use smart defaults with detected directory structure
+    this.config = this.getSmartDefaultConfig();
     return this.config;
   }
 

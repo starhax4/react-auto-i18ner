@@ -60,32 +60,86 @@ async function validateReactProject(): Promise<{
     issues.push('React dependency not found in package.json');
   }
 
-  // Check for src directory
-  const srcDir = path.join(projectRoot, 'src');
-  if (!(await fs.pathExists(srcDir))) {
-    issues.push('No src/ directory found');
+  // Check for component directories (flexible for Next.js)
+  const possibleDirs = ['src', 'app', 'pages', 'components'];
+  let foundComponentDir = false;
+
+  for (const dir of possibleDirs) {
+    const dirPath = path.join(projectRoot, dir);
+    if (await fs.pathExists(dirPath)) {
+      foundComponentDir = true;
+      break;
+    }
   }
 
-  // Detect project type and count component files
+  if (!foundComponentDir) {
+    issues.push(
+      'No component directories found (src/, app/, pages/, or components/)'
+    );
+  }
+
+  // Detect project type and count component files - check multiple directories
   let projectType: 'typescript' | 'javascript' | 'unknown' = 'unknown';
   let componentFiles = 0;
 
   try {
-    const tsFiles = glob.sync('src/**/*.{tsx,ts}', { cwd: projectRoot });
-    const jsFiles = glob.sync('src/**/*.{jsx,js}', { cwd: projectRoot });
+    // Check in multiple common directories for Next.js compatibility
+    const searchPatterns = [
+      'src/**/*.{tsx,ts,jsx,js}',
+      'app/**/*.{tsx,ts,jsx,js}',
+      'pages/**/*.{tsx,ts,jsx,js}',
+      'components/**/*.{tsx,ts,jsx,js}',
+      '*.{tsx,ts,jsx,js}', // Root level files
+    ];
+
+    let allTsFiles: string[] = [];
+    let allJsFiles: string[] = [];
+
+    for (const pattern of searchPatterns) {
+      const files = glob.sync(pattern, {
+        cwd: projectRoot,
+        ignore: [
+          '**/node_modules/**',
+          '**/dist/**',
+          '**/build/**',
+          '**/.next/**',
+          '**/out/**',
+          '**/*.test.*',
+          '**/*.spec.*',
+        ],
+      });
+
+      const tsFiles = files.filter(
+        (f) => f.endsWith('.tsx') || f.endsWith('.ts')
+      );
+      const jsFiles = files.filter(
+        (f) => f.endsWith('.jsx') || f.endsWith('.js')
+      );
+
+      allTsFiles = allTsFiles.concat(tsFiles);
+      allJsFiles = allJsFiles.concat(jsFiles);
+    }
+
+    // Remove duplicates
+    allTsFiles = [...new Set(allTsFiles)];
+    allJsFiles = [...new Set(allJsFiles)];
 
     componentFiles =
-      tsFiles.filter((f) => f.endsWith('.tsx')).length +
-      jsFiles.filter((f) => f.endsWith('.jsx')).length;
+      allTsFiles.filter((f) => f.endsWith('.tsx')).length +
+      allJsFiles.filter((f) => f.endsWith('.jsx')).length;
 
-    if (tsFiles.length > 0 || allDeps.typescript || allDeps['@types/react']) {
+    if (
+      allTsFiles.length > 0 ||
+      allDeps.typescript ||
+      allDeps['@types/react']
+    ) {
       projectType = 'typescript';
-    } else if (jsFiles.length > 0) {
+    } else if (allJsFiles.length > 0) {
       projectType = 'javascript';
     }
 
     if (componentFiles === 0) {
-      issues.push('No React component files (.jsx/.tsx) found in src/');
+      issues.push('No React component files (.jsx/.tsx) found');
     }
   } catch (error) {
     issues.push('Could not scan for component files');
@@ -283,6 +337,43 @@ program.action(async (options) => {
         `   📄 Found ${projectValidation.componentFiles} component file(s)`
       )
     );
+
+    // Detect Next.js and show additional info
+    const packageJsonPath = path.join(process.cwd(), 'package.json');
+    if (await fs.pathExists(packageJsonPath)) {
+      try {
+        const packageJson = await fs.readJson(packageJsonPath);
+        const deps = {
+          ...packageJson.dependencies,
+          ...packageJson.devDependencies,
+        };
+
+        if (deps.next) {
+          const nextVersion = deps.next.replace('^', '').replace('~', '');
+          console.log(
+            chalk.blue(`   🚀 Next.js project detected (v${nextVersion})`)
+          );
+
+          // Detect App Router vs Pages Router
+          const appDirExists = await fs.pathExists(
+            path.join(process.cwd(), 'app')
+          );
+          const pagesDirExists = await fs.pathExists(
+            path.join(process.cwd(), 'pages')
+          );
+
+          if (appDirExists) {
+            console.log(chalk.blue(`   📱 Using App Router (app/ directory)`));
+          } else if (pagesDirExists) {
+            console.log(
+              chalk.blue(`   📄 Using Pages Router (pages/ directory)`)
+            );
+          }
+        }
+      } catch (error) {
+        // Ignore errors
+      }
+    }
 
     // Show what will happen (unless --no-interactive)
     if (!options.interactive === false) {

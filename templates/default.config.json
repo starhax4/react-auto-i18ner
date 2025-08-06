@@ -1,0 +1,51 @@
+{
+  "srcDir": "./src",
+  "outputDir": "./src/locales",
+  "backupDir": "./i18n-backup",
+  "sourceLanguage": "en",
+  "targetLanguages": ["es", "fr", "de"],
+  "include": ["**/*.{tsx,jsx}"],
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/*.stories.*"
+  ],
+  "transformation": {
+    "extractJSXText": true,
+    "extractAttributes": true,
+    "extractButtonText": true,
+    "extractTooltips": true,
+    "extractAriaLabels": true,
+    "extractPlaceholders": true
+  },
+  "components": {
+    "addUseTranslationHook": true,
+    "supportClassComponents": true,
+    "customHookImport": "react-i18next"
+  },
+  "validation": {
+    "minLength": 2,
+    "maxLength": 500,
+    "skipTechnicalTerms": true,
+    "skipCodeFragments": true,
+    "skipNumbers": true,
+    "skipPaths": true,
+    "customSkipPatterns": ["^\\d+$", "^[A-Z_]+$", "^\\w+\\.(js|ts|tsx|jsx)$"]
+  },
+  "format": {
+    "indent": 2,
+    "sortKeys": true,
+    "keyStrategy": "text",
+    "keyPrefix": "",
+    "keySeparator": "."
+  },
+  "advanced": {
+    "preserveWhitespace": false,
+    "handleNestedComponents": true,
+    "generateTypeDefinitions": true,
+    "createBackup": true
+  }
+}

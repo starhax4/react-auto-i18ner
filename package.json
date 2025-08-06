@@ -1,0 +1,81 @@
+{
+  "name": "react-auto-i18ner",
+  "version": "1.0.0",
+  "description": "One-command React i18n transformation tool - Just run 'npx react-auto-i18ner' to automatically extract texts, create translation files, and transform JSX components",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "react-auto-i18ner": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:package": "./test-package.sh",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "react",
+    "i18n",
+    "internationalization",
+    "automation",
+    "jsx",
+    "typescript",
+    "transform",
+    "extract",
+    "translation",
+    "react-i18next",
+    "npx",
+    "one-command",
+    "zero-config",
+    "cli"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/react-auto-i18ner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/react-auto-i18ner/issues"
+  },
+  "homepage": "https://github.com/yourusername/react-auto-i18ner#readme",
+  "dependencies": {
+    "ts-morph": "^20.0.0",
+    "glob": "^10.3.0",
+    "commander": "^11.0.0",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.0",
+    "fs-extra": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/fs-extra": "^11.0.0",
+    "@types/inquirer": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-i18next": ">=11.0.0",
+    "i18next": ">=20.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

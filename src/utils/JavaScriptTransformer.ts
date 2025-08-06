@@ -149,15 +149,18 @@ export class JavaScriptTransformer {
       pattern.replace(/\{tsx,jsx\}/, '{js,jsx}').replace(/\.tsx?/, '.js')
     );
 
-    const patterns = this.config.include
-      .concat(jsPatterns)
-      .map((pattern) => path.join(this.config.srcDir, pattern));
+    const patterns = this.config.include.concat(jsPatterns).map((pattern) => {
+      // Use path.posix for glob patterns (always forward slashes)
+      const normalizedSrcDir = this.config.srcDir.replace(/\\/g, '/');
+      const normalizedPattern = pattern.replace(/\\/g, '/');
+      return path.posix.join(normalizedSrcDir, normalizedPattern);
+    });
 
     let files: string[] = [];
 
     for (const pattern of patterns) {
       const matches = glob.sync(pattern, {
-        ignore: this.config.exclude,
+        ignore: this.config.exclude.map((ex) => ex.replace(/\\/g, '/')),
       });
       files = files.concat(matches);
     }

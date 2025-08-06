@@ -51,7 +51,9 @@ export class I18nTransformer {
     ];
 
     for (const pattern of possiblePaths) {
-      const matches = glob.sync(pattern);
+      // Normalize paths for glob
+      const normalizedPattern = pattern.replace(/\\/g, '/');
+      const matches = glob.sync(normalizedPattern);
       if (matches.length > 0) {
         return matches[0];
       }
@@ -168,15 +170,18 @@ export class I18nTransformer {
   }
 
   private async findFiles(): Promise<string[]> {
-    const patterns = this.config.include.map((pattern) =>
-      path.join(this.config.srcDir, pattern)
-    );
+    const patterns = this.config.include.map((pattern) => {
+      // Use path.posix for glob patterns (always forward slashes)
+      const normalizedSrcDir = this.config.srcDir.replace(/\\/g, '/');
+      const normalizedPattern = pattern.replace(/\\/g, '/');
+      return path.posix.join(normalizedSrcDir, normalizedPattern);
+    });
 
     let files: string[] = [];
 
     for (const pattern of patterns) {
       const matches = glob.sync(pattern, {
-        ignore: this.config.exclude,
+        ignore: this.config.exclude.map((ex) => ex.replace(/\\/g, '/')),
       });
       files = files.concat(matches);
     }

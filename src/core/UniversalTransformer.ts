@@ -85,14 +85,17 @@ export class UniversalTransformer {
     }
 
     // Count actual files
-    const patterns = this.config.include.map((pattern) =>
-      path.join(this.config.srcDir, pattern)
-    );
+    const patterns = this.config.include.map((pattern) => {
+      // Use path.posix for glob patterns (always forward slashes)
+      const normalizedSrcDir = this.config.srcDir.replace(/\\/g, '/');
+      const normalizedPattern = pattern.replace(/\\/g, '/');
+      return path.posix.join(normalizedSrcDir, normalizedPattern);
+    });
 
     let allFiles: string[] = [];
     for (const pattern of patterns) {
       const matches = glob.sync(pattern, {
-        ignore: this.config.exclude,
+        ignore: this.config.exclude.map((ex) => ex.replace(/\\/g, '/')),
       });
       allFiles = allFiles.concat(matches);
     }

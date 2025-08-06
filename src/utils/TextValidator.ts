@@ -49,6 +49,18 @@ export class TextValidator {
       return false;
     }
 
+    // Skip texts with line breaks (\r\n, \n, \r) - these are usually code fragments
+    if (/[\r\n]/.test(cleanText)) {
+      this.recordSkip('line-breaks');
+      return false;
+    }
+
+    // Skip TypeScript/JavaScript code patterns
+    if (this.isCodeFragment(cleanText)) {
+      this.recordSkip('code-fragment');
+      return false;
+    }
+
     // Skip paths if configured
     if (this.config.validation.skipPaths && this.isPath(cleanText)) {
       this.recordSkip('path');
@@ -189,8 +201,8 @@ export class TextValidator {
       // React/JSX patterns
       /React\.|useState|useEffect|className|onClick|onChange/,
 
-      // Type definitions
-      /React\.ReactElement|FieldPath|VariantProps/,
+      // Type definitions and TypeScript patterns
+      /React\.ReactElement|FieldPath|VariantProps|React\.ComponentProps|ComponentPropsWithoutRef/,
 
       // CSS and styling
       /this\.|\.x|\.y/,
@@ -201,8 +213,29 @@ export class TextValidator {
       // HTML/JSX tags
       /<|>/,
 
-      // Line breaks and formatting
+      // Line breaks and formatting (this is the key addition!)
       /\r|\n|\t/,
+
+      // // TypeScript displayName patterns
+      // /\.displayName\s*=/,
+
+      // // Generic type patterns
+      // /^[A-Z][a-zA-Z]*<.*>$/,
+
+      // // Function signatures
+      // /\(.*\)\s*=>|function\s*\(/,
+
+      // // Object property patterns (like "props: React.SVGProps")
+      // /^\w+:\s*\w+\.\w+/,
+
+      // // Starts or ends with special code characters
+      // /^[,)}\]]+|[,({[\]]+$/,
+
+      // // Template literals or string interpolation
+      // /\${.*}|`.*`/,
+
+      // // Variable declarations
+      // /^(interface|type)\s+/,
     ];
 
     return codePatterns.some((pattern) => pattern.test(text));

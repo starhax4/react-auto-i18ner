@@ -1,6 +1,6 @@
 {
   "name": "react-auto-i18ner",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "One-command React i18n transformation tool - Just run 'npx react-auto-i18ner' to automatically extract texts, create translation files, and transform JSX components",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

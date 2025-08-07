@@ -2,18 +2,20 @@
 
 🚀 **Automated React i18n transformation tool** that extracts texts, creates translation files, and transforms JSX components end-to-end.
 
-**✨ Works with React, Next.js 13+, and TypeScript/JavaScript projects!**
+**✨ Works with React and TypeScript/JavaScript projects!**
 
 **🎯 One Command - Zero Configuration: `npx react-auto-i18ner`**
 
-## 🌟 **Perfect for Next.js 14+ App Router!**
+## 🚧 **Next.js Support Coming Soon!**
 
-- ✅ **App Router Support**: Automatically detects and transforms `app/` directory
-- ✅ **Pages Router Support**: Works with traditional `pages/` directory
-- ✅ **Server Components**: Handles Next.js Server Components
-- ✅ **Client Components**: Works with 'use client' components
-- ✅ **Smart Locales**: Places translation files in the right location (`app/locales/` or `locales/`)
-- ✅ **Route Handlers**: Skips API routes automatically
+Next.js support is currently under development and will be available in future releases:
+
+- 🔄 **App Router Support**: Automatically detect and transform `app/` directory
+- 🔄 **Pages Router Support**: Work with traditional `pages/` directory
+- 🔄 **Server Components**: Handle Next.js Server Components
+- 🔄 **Client Components**: Work with 'use client' components
+- 🔄 **Smart Locales**: Place translation files in the right location (`app/locales/` or `locales/`)
+- 🔄 **Route Handlers**: Skip API routes automatically
 
 [![npm version](https://badge.fury.io/js/react-auto-i18ner.svg)](https://badge.fury.io/js/react-auto-i18ner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -619,6 +621,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Roadmap
 
+- [ ] **Next.js Support** - App Router, Pages Router, Server/Client Components
 - [ ] Support for Vue.js components
 - [ ] Integration with translation services (Google Translate, DeepL)
 - [ ] Visual diff tool for translation changes

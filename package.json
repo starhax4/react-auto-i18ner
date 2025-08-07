@@ -1,7 +1,7 @@
 {
   "name": "react-auto-i18ner",
   "version": "1.0.2",
-  "description": "One-command React i18n transformation tool - Just run 'npx react-auto-i18ner' to automatically extract texts, create translation files, and transform JSX components",
+  "description": "One-command React i18n transformation tool - Just run 'npx react-auto-i18ner' to automatically extract texts, create translation files, and transform JSX components. Next.js support coming soon!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -24,10 +24,6 @@
   ],
   "keywords": [
     "react",
-    "nextjs",
-    "next.js",
-    "app-router",
-    "pages-router",
     "i18n",
     "internationalization",
     "automation",
@@ -40,7 +36,9 @@
     "npx",
     "one-command",
     "zero-config",
-    "cli"
+    "cli",
+    "nextjs-planned",
+    "next.js-coming-soon"
   ],
   "author": "Hamza Islam <hamza.islam@example.com>",
   "license": "MIT",

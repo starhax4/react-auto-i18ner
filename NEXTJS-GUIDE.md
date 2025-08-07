@@ -1,41 +1,43 @@
-# 🚀 Next.js 14+ Guide - React Auto i18ner
+# � Next.js Support - Coming Soon!
 
-## Perfect for Next.js App Router & Pages Router
+## Planned Features for Next.js Integration
 
-React Auto i18ner now has **enhanced support for Next.js 14+** with intelligent detection and optimized configurations.
+React Auto i18ner is planning **enhanced support for Next.js 14+** with intelligent detection and optimized configurations.
 
-## 🎯 One Command for Next.js
+**⚠️ Note: Next.js support is currently under development and not yet available in the current version.**
+
+## 🎯 Planned One Command for Next.js
 
 ```bash
-# In your Next.js project directory:
+# In your Next.js project directory (coming soon):
 npx react-auto-i18ner
 ```
 
-## 📱 App Router Support (Next.js 13+)
+## 📱 Planned App Router Support (Next.js 13+)
 
-### Automatic Detection
+### Planned Automatic Detection
 
-The tool automatically detects:
+The tool will automatically detect:
 
-- ✅ **App Router structure** (`app/` directory)
-- ✅ **Layout components** (`layout.tsx`)
-- ✅ **Page components** (`page.tsx`)
-- ✅ **Loading & Error states** (`loading.tsx`, `error.tsx`, `not-found.tsx`)
-- ✅ **Server & Client Components**
-- ✅ **Nested routes** and route groups
+- 🔄 **App Router structure** (`app/` directory)
+- 🔄 **Layout components** (`layout.tsx`)
+- 🔄 **Page components** (`page.tsx`)
+- 🔄 **Loading & Error states** (`loading.tsx`, `error.tsx`, `not-found.tsx`)
+- 🔄 **Server & Client Components**
+- 🔄 **Nested routes** and route groups
 
-### Example App Router Project
+### Example App Router Project Structure (Planned)
 
 ```
 my-nextjs-app/
 ├── app/
-│   ├── layout.tsx          ← Transformed ✅
-│   ├── page.tsx            ← Transformed ✅
+│   ├── layout.tsx          ← Will be transformed
+│   ├── page.tsx            ← Will be transformed
 │   ├── about/
-│   │   └── page.tsx        ← Transformed ✅
+│   │   └── page.tsx        ← Will be transformed
 │   ├── components/
-│   │   └── ui.tsx          ← Transformed ✅
-│   └── locales/            ← Generated 🎉
+│   │   └── ui.tsx          ← Will be transformed
+│   └── locales/            ← Will be generated
 │       ├── en.json
 │       ├── es.json
 │       ├── fr.json
@@ -43,10 +45,12 @@ my-nextjs-app/
 └── package.json
 ```
 
-### Before Transformation (App Router)
+### Planned Transformation Example (App Router)
+
+### Planned Transformation Example - Before
 
 ```tsx
-// app/page.tsx
+// app/page.tsx (example of what will be transformed)
 export default function HomePage() {
   return (
     <div>
@@ -57,7 +61,7 @@ export default function HomePage() {
   );
 }
 
-// app/layout.tsx
+// app/layout.tsx (example of what will be transformed)
 export default function RootLayout({ children }) {
   return (
     <html>
@@ -73,10 +77,10 @@ export default function RootLayout({ children }) {
 }
 ```
 
-### After Transformation (App Router)
+### Planned Transformation Example - After
 
 ```tsx
-// app/page.tsx
+// app/page.tsx (example of expected result)
 import { useTranslation } from 'react-i18next';
 
 export default function HomePage() {
@@ -90,7 +94,7 @@ export default function HomePage() {
   );
 }
 
-// app/layout.tsx
+// app/layout.tsx (example of expected result)
 import { useTranslation } from 'react-i18next';
 
 export default function RootLayout({ children }) {
@@ -109,28 +113,28 @@ export default function RootLayout({ children }) {
 }
 ```
 
-## 📄 Pages Router Support (Next.js <13)
+## 📄 Planned Pages Router Support (Next.js <13)
 
-### Example Pages Router Project
+### Example Pages Router Project Structure (Planned)
 
 ```
 my-nextjs-app/
 ├── pages/
-│   ├── index.tsx           ← Transformed ✅
-│   ├── about.tsx           ← Transformed ✅
-│   └── _app.tsx            ← Transformed ✅
+│   ├── index.tsx           ← Will be transformed
+│   ├── about.tsx           ← Will be transformed
+│   └── _app.tsx            ← Will be transformed
 ├── components/
-│   └── Header.tsx          ← Transformed ✅
-├── locales/                ← Generated 🎉
+│   └── Header.tsx          ← Will be transformed
+├── locales/                ← Will be generated
 │   ├── en.json
 │   ├── es.json
 │   └── fr.json
 └── package.json
 ```
 
-## 🤖 What Gets Detected
+## 🤖 Planned Detection Features
 
-The tool intelligently detects and shows:
+The tool will intelligently detect and show:
 
 ```bash
 🚀 React Auto i18ner - One-Command Transformation
@@ -142,9 +146,9 @@ The tool intelligently detects and shows:
    📱 Using App Router (app/ directory)    # or Pages Router
 ```
 
-## 🎛️ Smart Configuration
+## 🎛️ Planned Smart Configuration
 
-### App Router Configuration (Generated automatically)
+### App Router Configuration (Will be generated automatically)
 
 ```json
 {
@@ -163,7 +167,7 @@ The tool intelligently detects and shows:
 }
 ```
 
-### Pages Router Configuration (Generated automatically)
+### Pages Router Configuration (Will be generated automatically)
 
 ```json
 {
@@ -178,21 +182,21 @@ The tool intelligently detects and shows:
 }
 ```
 
-## 🔧 Advanced Usage
+## 🔧 Planned Advanced Usage
 
-### Custom Languages for Next.js
+### Custom Languages for Next.js (Coming Soon)
 
 ```bash
 npx react-auto-i18ner --languages "en,es,fr,de,ja,ko"
 ```
 
-### Preview Changes
+### Preview Changes (Coming Soon)
 
 ```bash
 npx react-auto-i18ner --dry-run
 ```
 
-### Custom Output Directory
+### Custom Output Directory (Coming Soon)
 
 ```bash
 # App Router
@@ -202,14 +206,14 @@ npx react-auto-i18ner --output ./locales
 npx react-auto-i18ner --output ./public/locales
 ```
 
-## 🌐 Next.js i18next Setup
+## 🌐 Planned Next.js i18next Setup
 
-After running the tool, set up react-i18next in your Next.js app:
+After the tool is released with Next.js support, you will be able to set up react-i18next in your Next.js app:
 
-### For App Router
+### For App Router (Planned Setup)
 
 ```tsx
-// app/layout.tsx
+// app/layout.tsx (example setup when feature is available)
 import { Inter } from 'next/font/preview';
 import './globals.css';
 import { I18nextProvider } from './i18n/client';
@@ -225,10 +229,10 @@ export default function RootLayout({ children }) {
 }
 ```
 
-### For Pages Router
+### For Pages Router (Planned Setup)
 
 ```tsx
-// pages/_app.tsx
+// pages/_app.tsx (example setup when feature is available)
 import type { AppProps } from 'next/app';
 import { appWithTranslation } from 'next-i18next';
 
@@ -239,26 +243,22 @@ function MyApp({ Component, pageProps }: AppProps) {
 export default appWithTranslation(MyApp);
 ```
 
-## 🎉 What's Optimized for Next.js
+## 🎉 Planned Optimizations for Next.js
 
-- ✅ **API Routes Skipped**: Automatically ignores `/api` routes
-- ✅ **Middleware Ignored**: Skips `middleware.ts/js` files
-- ✅ **Build Folders Excluded**: Ignores `.next/`, `out/`, etc.
-- ✅ **Route Files Prioritized**: Focuses on `page.tsx`, `layout.tsx` etc.
-- ✅ **Smart Locales Placement**: `app/locales/` for App Router, `locales/` for Pages Router
-- ✅ **TypeScript Definitions**: Generates types for better DX
+- 🔄 **API Routes Skipped**: Will automatically ignore `/api` routes
+- 🔄 **Middleware Ignored**: Will skip `middleware.ts/js` files
+- 🔄 **Build Folders Excluded**: Will ignore `.next/`, `out/`, etc.
+- 🔄 **Route Files Prioritized**: Will focus on `page.tsx`, `layout.tsx` etc.
+- 🔄 **Smart Locales Placement**: `app/locales/` for App Router, `locales/` for Pages Router
+- 🔄 **TypeScript Definitions**: Will generate types for better DX
 
-## 🚀 Success Stories
+## 🚀 Development Status
 
-"Converted our entire Next.js 14 app with 50+ pages in under 30 seconds!"
-
-"Perfect for App Router - it just works!"
-
-"Finally, i18n setup that doesn't take hours to configure!"
+Next.js support is actively being developed. Follow our roadmap for updates on when this feature will be available.
 
 ---
 
-**Ready to internationalize your Next.js app? Just run:**
+**Stay tuned for Next.js support! Currently available for React projects:**
 
 ```bash
 npx react-auto-i18ner

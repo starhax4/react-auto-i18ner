@@ -1,59 +1,46 @@
-// Main library exports
-export { I18nTransformer } from './core/I18nTransformer';
-export { UniversalTransformer } from './core/UniversalTransformer';
-export { ConfigManager } from './core/ConfigManager';
-export { TextValidator } from './utils/TextValidator';
-export { JavaScriptTransformer } from './utils/JavaScriptTransformer';
+/**
+ * Programmatic API for react-auto-i18ner.
+ *
+ * The CLI is a thin wrapper around these exports; anything the CLI can do is
+ * available here for build-tool integration or scripting.
+ */
+import { Pipeline, RunOptions } from './core/Pipeline';
+import { Config, ConfigInput, configSchema } from './config/schema';
+import { RunResult } from './core/types';
 
-// Type exports
-export * from './types';
+export { Pipeline } from './core/Pipeline';
+export type { RunOptions } from './core/Pipeline';
+export { loadConfig, saveConfig, ConfigError } from './config/loadConfig';
+export { configSchema, defaultConfig } from './config/schema';
+export type {
+  Config,
+  ConfigInput,
+  LibraryId,
+  StackId,
+  AiAgentId,
+  KeyStrategyId,
+} from './config/schema';
+export type {
+  RunResult,
+  RunStats,
+  Extraction,
+  FileChange,
+  LocaleWrite,
+} from './core/types';
+export { getAdapter, allAdapters } from './adapters/registry';
+export type { I18nAdapter } from './adapters/I18nAdapter';
+export { detectStack } from './stack/detectStack';
+export { recommendFor } from './stack/recommend';
+export { TextValidator } from './validation/TextValidator';
 
-// Utility functions for programmatic usage
+/**
+ * Transform a project programmatically. Accepts a partial config (validated and
+ * defaulted through the schema) and returns the full {@link RunResult}.
+ */
 export async function transformProject(
-  config?: Partial<import('./types').I18nConfig>
-) {
-  const { UniversalTransformer } = await import('./core/UniversalTransformer');
-  const { ConfigManager } = await import('./core/ConfigManager');
-
-  const configManager = ConfigManager.getInstance();
-  if (config) {
-    configManager.updateConfig(config);
-  }
-  const fullConfig = configManager.getConfig();
-
-  const transformer = new UniversalTransformer(fullConfig);
-  return transformer.transform();
-}
-
-export async function validateText(
-  text: string,
-  config?: Partial<import('./types').I18nConfig>
-) {
-  const { TextValidator } = await import('./utils/TextValidator');
-  const { ConfigManager } = await import('./core/ConfigManager');
-
-  const configManager = ConfigManager.getInstance();
-  if (config) {
-    configManager.updateConfig(config);
-  }
-  const fullConfig = configManager.getConfig();
-
-  const validator = new TextValidator(fullConfig);
-  return validator.validateWithDetails(text);
-}
-
-export async function createConfig(options?: {
-  interactive?: boolean;
-  outputPath?: string;
-}) {
-  const { ConfigManager } = await import('./core/ConfigManager');
-
-  const configManager = ConfigManager.getInstance();
-  const config = configManager.createSampleConfig();
-
-  if (options?.outputPath) {
-    configManager.saveConfig(config, options.outputPath);
-  }
-
-  return config;
+  config: ConfigInput = {},
+  options: RunOptions = {}
+): Promise<RunResult> {
+  const validated: Config = configSchema.parse(config);
+  return new Pipeline(validated).run(options);
 }

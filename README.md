@@ -1,640 +1,223 @@
-# React Auto i18ner
+# react-auto-i18ner
 
-🚀 **Automated React i18n transformation tool** that extracts texts, creates translation files, and transforms JSX components end-to-end.
+**AST-based React i18n automation.** Point it at a React/TypeScript project and
+it extracts user-facing text, wraps it in translation calls, injects the
+translation hook, and generates nested locale files — safely, on the real syntax
+tree, with an idempotent, reviewable result.
 
-**✨ Works with React and TypeScript/JavaScript projects!**
-
-**🎯 One Command - Zero Configuration: `npx react-auto-i18ner`**
-
-## 🚧 **Next.js Support Coming Soon!**
-
-Next.js support is currently under development and will be available in future releases:
-
-- 🔄 **App Router Support**: Automatically detect and transform `app/` directory
-- 🔄 **Pages Router Support**: Work with traditional `pages/` directory
-- 🔄 **Server Components**: Handle Next.js Server Components
-- 🔄 **Client Components**: Work with 'use client' components
-- 🔄 **Smart Locales**: Place translation files in the right location (`app/locales/` or `locales/`)
-- 🔄 **Route Handlers**: Skip API routes automatically
-
-[![npm version](https://badge.fury.io/js/react-auto-i18ner.svg)](https://badge.fury.io/js/react-auto-i18ner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
-
-- 🎯 **Automated Text Extraction**: Intelligently extracts translatable text from JSX components
-- 🔄 **Smart Transformation**: Automatically wraps text with translation functions
-- 📦 **Hook Management**: Adds `useTranslation` hooks where needed
-- 🧹 **Code Fragment Filtering**: Filters out code fragments and technical terms
-- 🎨 **Multiple Component Types**: Supports function, arrow, and class components
-- 📝 **Translation File Generation**: Creates clean, organized translation files
-- 🔧 **Highly Configurable**: Extensive configuration options for different project needs
-- 🛡️ **TypeScript Support**: Full TypeScript support with generated type definitions
-- 🟨 **JavaScript Support**: Works seamlessly with pure JavaScript/JSX projects
-- 🔍 **Auto Detection**: Automatically detects project type (TS/JS) and uses appropriate strategy
-- 💾 **Backup System**: Optional backup creation before transformation
-- 🎨 **CLI & Programmatic**: Use via CLI or integrate into your build process
-
-## Installation
-
 ```bash
-# npm
-npm install -g react-auto-i18ner
-
-# yarn
-yarn global add react-auto-i18ner
-
-# pnpm
-pnpm add -g react-auto-i18ner
-```
-
-## Quick Start
-
-**🎯 One Command - Zero Configuration:**
-
-```bash
-# Navigate to your React project and run:
 npx react-auto-i18ner
 ```
 
-That's it! The tool will:
+---
 
-- ✅ Auto-detect your project type (TypeScript/JavaScript)
-- ✅ Find all React components
-- ✅ Extract translatable text
-- ✅ Transform your code to use `t()` functions
-- ✅ Add `useTranslation()` hooks
-- ✅ Generate translation files for multiple languages
+## Why
 
-### Real Example
+Adding i18n to an existing app is tedious and error-prone by hand. This tool
+automates the mechanical 90%: finding strings, keying them, wrapping them,
+wiring the hook, and scaffolding locale files — leaving you to translate.
 
-**Before transformation:**
+It works on the **Abstract Syntax Tree** (Babel + recast), not with regular
+expressions, so it only ever touches genuine JSX. Comparison operators (`a > b`),
+string literals and comments are structurally invisible to it — the class of
+"it wrapped my code and broke the build" bugs simply can't happen. See
+[ARCHITECTURE.md](ARCHITECTURE.md) for how it works.
 
-```tsx
-function App() {
-  return (
-    <div>
-      <h1>Welcome to our App</h1>
-      <button onClick={handleClick}>Click Me</button>
-      <input placeholder="Enter your name" />
-    </div>
-  );
-}
-```
+---
 
-**After running `npx react-auto-i18ner`:**
+## What it does
 
-```tsx
-import { useTranslation } from 'react-i18next';
+| | |
+|---|---|
+| 🌳 **AST-based** | Babel + recast; formatting-preserving, diff-only edits |
+| 🔤 **Extracts** | JSX text and configurable attributes (`placeholder`, `title`, `alt`, `aria-label`) |
+| 🧩 **Interpolation** | `Hello {user.name}!` → `t('…', { name: user.name })` with `{{name}}` in the message |
+| 🪝 **Wires the hook** | Injects the translation hook/import; converts expression-body arrows to blocks so `t` is always defined |
+| 🗂 **Nested keys** | Component-namespaced keys → nested locale JSON (industry standard) |
+| 📚 **Two libraries** | `react-i18next` and `next-intl` (more via adapters) |
+| 🔎 **Stack-aware** | Detects Vite / CRA / Next.js and recommends sane defaults |
+| 🔁 **Idempotent** | Re-running changes nothing already transformed |
+| 🛟 **Git-safe** | No code backups — warns on a dirty tree, real `--dry-run` preview |
+| 🤖 **Optional AI** | Use your installed Claude/Cursor/Gemini/aider CLI for semantic keys & translations; fully works without it |
 
-function App() {
-  const { t } = useTranslation();
-  return (
-    <div>
-      <h1>{t('Welcome to our App')}</h1>
-      <button onClick={handleClick}>{t('Click Me')}</button>
-      <input placeholder={t('Enter your name')} />
-    </div>
-  );
-}
-```
+---
 
-**Generated translation files:**
-
-```json
-// src/locales/en.json
-{
-  "Welcome to our App": "Welcome to our App",
-  "Click Me": "Click Me",
-  "Enter your name": "Enter your name"
-}
-
-// src/locales/es.json
-{
-  "Welcome to our App": "Bienvenido a nuestra App",
-  "Click Me": "Hacer clic",
-  "Enter your name": "Ingrese su nombre"
-}
-```
-
-## Installation Options
+## Install
 
 ```bash
-# Use directly with npx (recommended)
+# one-off
 npx react-auto-i18ner
 
-# Or install globally
-npm install -g react-auto-i18ner
-
-# yarn
-yarn global add react-auto-i18ner
-
-# pnpm
-pnpm add -g react-auto-i18ner
+# or install
+npm i -D react-auto-i18ner
 ```
 
-## Usage Examples
+Peer libraries are yours to install: `react-i18next` (+ `i18next`) or `next-intl`.
 
-### Simple One-Command Usage
+---
+
+## Quick start
 
 ```bash
-# Auto-transform your entire React project
+# First run launches an interactive setup (detects your stack, picks a library,
+# languages, and an AI agent if you have one), writes a config, then transforms.
 npx react-auto-i18ner
 
-# Custom source directory
-npx react-auto-i18ner --src ./components
-
-# Custom languages
-npx react-auto-i18ner --languages "es,fr,de,it,ja"
-
-# Preview changes without applying them
+# Preview everything without writing a single file:
 npx react-auto-i18ner --dry-run
 
-# Skip backup creation
-npx react-auto-i18ner --no-backup
-
-# Skip interactive confirmation
-npx react-auto-i18ner --no-interactive
+# Non-interactive (CI):
+npx react-auto-i18ner run --yes --library react-i18next --languages es,fr,de
 ```
 
-### Advanced CLI Commands
+### Example
 
-#### Transform Project (Explicit)
-
-```bash
-# Basic transformation (auto-detects JS/TS)
-react-auto-i18ner transform
-
-# Force specific transformer
-react-auto-i18ner transform --transformer javascript
-react-auto-i18ner transform --transformer typescript
-
-# With custom options
-react-auto-i18ner transform --src ./src --output ./locales --languages "es,fr,de"
-
-# Dry run (no changes)
-react-auto-i18ner transform --dry-run
-
-# With custom config file
-react-auto-i18ner transform --config ./my-i18n.config.json
-```
-
-#### Analyze Project
-
-```bash
-# Analyze project structure and get recommendations
-react-auto-i18ner analyze
-
-# Will show project type detection, file counts, and recommendations
-```
-
-#### Initialize Configuration
-
-```bash
-# Interactive setup
-react-auto-i18ner init --interactive
-
-# Generate default config
-react-auto-i18ner init
-```
-
-#### Validate Project
-
-```bash
-# Validate translation files
-react-auto-i18ner validate
-
-# Validate specific file
-react-auto-i18ner validate --file ./src/components/MyComponent.tsx
-```
-
-### Programmatic Usage
-
-```typescript
-import {
-  transformProject,
-  validateText,
-  createConfig,
-} from 'react-auto-i18ner';
-
-// Transform project programmatically
-const result = await transformProject({
-  srcDir: './src',
-  outputDir: './locales',
-  sourceLanguage: 'en',
-  targetLanguages: ['es', 'fr', 'de'],
-});
-
-// Validate text
-const validation = await validateText('Hello World');
-
-// Create configuration
-const config = await createConfig({
-  outputPath: './my-config.json',
-});
-```
-
-## Configuration
-
-### Configuration File Structure
-
-```json
-{
-  "srcDir": "./src",
-  "outputDir": "./src/locales",
-  "backupDir": "./i18n-backup",
-  "sourceLanguage": "en",
-  "targetLanguages": ["es", "fr", "de"],
-  "include": ["**/*.{tsx,jsx}"],
-  "exclude": ["**/node_modules/**", "**/*.test.*"],
-  "transformation": {
-    "extractJSXText": true,
-    "extractAttributes": true,
-    "extractButtonText": true,
-    "extractTooltips": true,
-    "extractAriaLabels": true,
-    "extractPlaceholders": true
-  },
-  "components": {
-    "addUseTranslationHook": true,
-    "supportClassComponents": true,
-    "customHookImport": "react-i18next"
-  },
-  "validation": {
-    "minLength": 2,
-    "maxLength": 500,
-    "skipTechnicalTerms": true,
-    "skipCodeFragments": true,
-    "skipNumbers": true,
-    "skipPaths": true,
-    "customSkipPatterns": []
-  },
-  "format": {
-    "indent": 2,
-    "sortKeys": true,
-    "keyStrategy": "text",
-    "keyPrefix": "",
-    "keySeparator": "."
-  },
-  "advanced": {
-    "preserveWhitespace": false,
-    "handleNestedComponents": true,
-    "generateTypeDefinitions": true,
-    "createBackup": true
-  }
-}
-```
-
-### Configuration Options
-
-#### Basic Options
-
-- `srcDir`: Source directory to scan for React files
-- `outputDir`: Where to generate translation files
-- `sourceLanguage`: Primary language code (e.g., 'en', 'pt-BR')
-- `targetLanguages`: Array of target language codes
-
-#### Transformation Options
-
-- `extractJSXText`: Extract text content between JSX tags
-- `extractAttributes`: Extract translatable attributes (placeholder, title, etc.)
-- `extractButtonText`: Extract Button component text
-- `extractTooltips`: Extract tooltip text
-- `extractAriaLabels`: Extract ARIA labels
-- `extractPlaceholders`: Extract placeholder attributes
-
-#### Validation Options
-
-- `minLength`/`maxLength`: Text length constraints
-- `skipTechnicalTerms`: Skip common technical terms
-- `skipCodeFragments`: Skip detected code fragments
-- `skipNumbers`: Skip numeric-only text
-- `skipPaths`: Skip file paths and URLs
-- `customSkipPatterns`: Custom regex patterns to skip
-
-#### Key Generation Strategies
-
-- `text`: Use original text as key
-- `hash`: Generate hash-based keys
-- `path`: Create path-based keys
-- `custom`: Use custom key generation
-
-## Examples
-
-````
-
-## JavaScript vs TypeScript Support
-
-React Auto i18ner automatically detects your project type and uses the appropriate transformation strategy:
-
-### TypeScript Projects
-- **Detection**: Presence of `tsconfig.json`, TypeScript dependencies, or `.ts/.tsx` files
-- **Strategy**: Uses TypeScript AST (Abstract Syntax Tree) via `ts-morph` for precise transformations
-- **Benefits**: Type-safe transformations, better error detection, generates type definitions
-
-### JavaScript Projects
-- **Detection**: Absence of TypeScript indicators, presence of `.js/.jsx` files only
-- **Strategy**: Uses regex-based parsing for lightweight, fast transformations
-- **Benefits**: No TypeScript dependencies required, works with any JavaScript setup
-
-### Manual Override
-```bash
-# Force JavaScript transformer (even in TS projects)
-react-auto-i18ner transform --transformer javascript
-
-# Force TypeScript transformer (even in JS projects)
-react-auto-i18ner transform --transformer typescript
-````
-
-### Project Analysis
-
-```bash
-# Get detailed project analysis and recommendations
-react-auto-i18ner analyze
-```
-
-This will show:
-
-- Detected project type
-- File counts (JS vs TS)
-- Configuration status
-- Recommendations for your setup
-
-## Examples
-
-### JavaScript Project
-
-**Before transformation**:
-
-```jsx
-// UserProfile.jsx
-function UserProfile({ user, onSubmit }) {
-  return (
-    <div>
-      <h1>User Profile</h1>
-      <button onClick={onSubmit}>Save Changes</button>
-      <input placeholder="Enter email" />
-    </div>
-  );
-}
-```
-
-**After transformation**:
-
-```jsx
-// UserProfile.jsx
-import { useTranslation } from 'react-i18next';
-
-function UserProfile({ user, onSubmit }) {
-  const { t } = useTranslation();
-
-  return (
-    <div>
-      <h1>{t('User Profile')}</h1>
-      <button onClick={onSubmit}>{t('Save Changes')}</button>
-      <input placeholder={t('Enter email')} />
-    </div>
-  );
-}
-```
-
-### TypeScript Project
-
-### Before Transformation
+Before:
 
 ```tsx
-function Welcome({ user }) {
+export function Greeting({ user }) {
   return (
     <div>
       <h1>Welcome back, {user.name}!</h1>
-      <button>Get Started</button>
+      <button>Get started</button>
       <input placeholder="Enter your email" />
     </div>
   );
 }
 ```
 
-### After Transformation
+After (`react-i18next`):
 
 ```tsx
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
-function Welcome({ user }) {
+export function Greeting({ user }) {
   const { t } = useTranslation();
-
   return (
     <div>
-      <h1>{t('Welcome back, {{name}}!', { name: user.name })}</h1>
-      <button>{t('Get Started')}</button>
-      <input placeholder={t('Enter your email')} />
+      <h1>{t("Greeting.welcomeBack", { name: user.name })}</h1>
+      <button>{t("Greeting.getStarted")}</button>
+      <input placeholder={t("Greeting.enterYourEmail")} />
     </div>
   );
 }
 ```
 
-### Generated Translation Files
-
-**en.json**
+`src/locales/en.json`:
 
 ```json
 {
-  "Enter your email": "Enter your email",
-  "Get Started": "Get Started",
-  "Welcome back, {{name}}!": "Welcome back, {{name}}!"
-}
-```
-
-**es.json**
-
-```json
-{
-  "Enter your email": "Ingresa tu correo electrónico",
-  "Get Started": "Comenzar",
-  "Welcome back, {{name}}!": "¡Bienvenido de vuelta, {{name}}!"
-}
-```
-
-## Advanced Features
-
-### Class Component Support
-
-The tool automatically handles class components using the `withTranslation` HOC:
-
-```tsx
-// Before
-class MyComponent extends React.Component {
-  render() {
-    return <div>Hello World</div>;
-  }
-}
-
-// After
-import { withTranslation, WithTranslation } from 'react-i18next';
-
-interface Props extends WithTranslation {
-  // your props
-}
-
-class MyComponent extends React.Component<Props> {
-  render() {
-    const { t } = this.props;
-    return <div>{t('Hello World')}</div>;
-  }
-}
-
-export default withTranslation()(MyComponent);
-```
-
-### Custom Hook Integration
-
-Configure custom translation hook imports:
-
-```json
-{
-  "components": {
-    "customHookImport": "@/hooks/useTranslation"
+  "Greeting": {
+    "welcomeBack": "Welcome back, {{name}}!",
+    "getStarted": "Get started",
+    "enterYourEmail": "Enter your email"
   }
 }
 ```
 
-### TypeScript Type Generation
+Target files (`es.json`, …) are created with the same keys and empty values,
+preserving any translations already present.
 
-Automatically generates TypeScript definitions:
-
-```typescript
-// types.ts
-export interface I18nKeys {
-  'Hello World': string;
-  'Get Started': string;
-  'Enter your email': string;
-}
-
-export type TranslationKey = keyof I18nKeys;
-```
-
-## Integration with Build Tools
-
-### Webpack Integration
-
-```javascript
-// webpack.config.js
-const { transformProject } = require('react-auto-i18ner');
-
-module.exports = {
-  // ... your config
-  plugins: [
-    {
-      apply: (compiler) => {
-        compiler.hooks.beforeCompile.tapAsync(
-          'ReactAutoI18ner',
-          async (params, callback) => {
-            await transformProject();
-            callback();
-          }
-        );
-      },
-    },
-  ],
-};
-```
-
-### Vite Integration
-
-```javascript
-// vite.config.js
-import { defineConfig } from 'vite';
-import { transformProject } from 'react-auto-i18ner';
-
-export default defineConfig({
-  plugins: [
-    {
-      name: 'react-auto-i18ner',
-      buildStart: async () => {
-        await transformProject();
-      },
-    },
-  ],
-});
-```
-
-## Best Practices
-
-1. **Run transformation on a clean Git state** - Easy to review changes
-2. **Create backups** - Enable the backup option for safety
-3. **Review generated translations** - Verify extracted text makes sense
-4. **Test with different languages** - Ensure UI works with longer/shorter text
-5. **Use meaningful key strategies** - Choose the key strategy that fits your project
-6. **Validate regularly** - Use the validate command to check translation files
-
-## Troubleshooting
-
-### Common Issues
-
-**Transform not finding files**
-
-- Check your `include` and `exclude` patterns
-- Verify the `srcDir` path is correct
-
-**Text not being extracted**
-
-- Check if text passes validation rules
-- Review `customSkipPatterns` for overly broad patterns
-- Use `--verbose` flag for detailed output
-
-**TypeScript errors after transformation**
-
-- Ensure `react-i18next` types are installed
-- Check if custom hook import is correct
-- Verify component props interface includes translation props
-
-**Generated keys are too long/short**
-
-- Adjust `keyStrategy` in configuration
-- Set appropriate `minLength`/`maxLength` values
-
-### Debug Mode
-
-```bash
-react-auto-i18ner transform --verbose --dry-run
-```
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Setup
-
-```bash
-git clone https://github.com/yourusername/react-auto-i18ner.git
-cd react-auto-i18ner
-npm install
-npm run build
-npm link
-
-# Test locally
-react-auto-i18ner --help
-```
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## Roadmap
-
-- [ ] **Next.js Support** - App Router, Pages Router, Server/Client Components
-- [ ] Support for Vue.js components
-- [ ] Integration with translation services (Google Translate, DeepL)
-- [ ] Visual diff tool for translation changes
-- [ ] React Native support
-- [ ] Plugin system for custom extractors
-- [ ] AI-powered translation suggestions
-
-## Support
-
-- 📖 [Documentation](https://github.com/yourusername/react-auto-i18ner/wiki)
-- 🐛 [Issue Tracker](https://github.com/yourusername/react-auto-i18ner/issues)
-- 💬 [Discussions](https://github.com/yourusername/react-auto-i18ner/discussions)
+> **Tip:** run your formatter (Prettier/ESLint) after transforming — like any
+> codemod, newly-inserted nodes aren't fully formatted.
 
 ---
 
-Made with ❤️ for the React community
+## Commands
+
+| Command | Description |
+|---|---|
+| `run` *(default)* | Transform the project. `--dry-run`, `--yes`. |
+| `init` | Interactive setup — detect stack, choose library, write config. |
+| `translate` | Fill empty target-locale entries using an AI agent. |
+| `check` | Report missing/empty translations per locale. |
+| `analyze` | Show detected stack, file counts and recommendations. |
+
+Common flags: `--config <path>`, `--src <dir>`, `--locales <dir>`,
+`--languages <list>`, `--library <react-i18next|next-intl>`,
+`--ai [claude|cursor|gemini|aider]` / `--no-ai`.
+
+---
+
+## Configuration
+
+Generated by `init` as `react-auto-i18ner.config.json` (also read from
+`package.json` under `"react-auto-i18ner"`). All fields are optional and
+defaulted; the schema is validated on load.
+
+```jsonc
+{
+  "library": "react-i18next",       // or "next-intl"
+  "stack": "vite",
+  "sourceDir": "./src",
+  "localesDir": "./src/locales",
+  "sourceLocale": "en",
+  "targetLocales": ["es", "fr", "de"],
+  "keyStrategy": "path",            // "path" (nested, default) | "flat" | "ai"
+  "extract": {
+    "jsxText": true,
+    "attributes": true,
+    "attributeNames": ["placeholder", "title", "alt", "aria-label"]
+  },
+  "ai": {
+    "enabled": false,
+    "agent": "claude",              // auto-detected when omitted
+    "tasks": { "nameKeys": true, "translate": true, "classify": false }
+  }
+}
+```
+
+---
+
+## Optional AI layer
+
+If you have an agent CLI installed (`claude`, `cursor-agent`, `gemini`,
+`aider`), the tool can:
+
+- **Name keys semantically** — `LoginForm.title` instead of a slug.
+- **Translate** target locales.
+
+It shells out to your existing agent (no API keys of its own) and **always falls
+back to the deterministic engine** if no agent is available or a call fails. The
+core tool is fully functional offline.
+
+---
+
+## Programmatic API
+
+```ts
+import { transformProject } from 'react-auto-i18ner';
+
+const result = await transformProject(
+  { library: 'react-i18next', sourceDir: './src', targetLocales: ['es', 'fr'] },
+  { dryRun: true }
+);
+console.log(result.stats);
+```
+
+---
+
+## Safety
+
+- **No code backups.** The tool relies on version control. With a clean git tree
+  it proceeds; with a dirty tree it warns and asks (skip with `--yes`).
+- **`--dry-run`** runs the real logic and writes nothing.
+- Review with `git diff`, revert with `git checkout`.
+
+---
+
+## Development
+
+```bash
+npm install
+npm run build
+npm test
+```
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for internals and [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+MIT

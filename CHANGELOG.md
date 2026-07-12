@@ -5,6 +5,41 @@ All notable changes to React Auto i18ner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-07-12
+
+Complete rewrite onto a real AST engine. **Breaking.**
+
+### Added
+
+- 🌳 **AST-based engine** (Babel + recast) replacing the old regex approach —
+  formatting-preserving, diff-only edits, one code path for JS/TS/JSX.
+- 🧩 **Interpolation**: text with `{expr}` becomes `t('… {{name}}', { name })`.
+- 🗂 **Nested, component-namespaced keys** with nested locale JSON output.
+- 📚 **Library adapters**: `react-i18next` and `next-intl` (extensible).
+- 🔎 **Stack detection** (Vite / CRA / Next.js App & Pages) + recommendations.
+- 🧙 **Interactive setup wizard** as the primary entry point.
+- 🤖 **Optional AI-agent layer** (claude / cursor / gemini / aider) for semantic
+  key naming and translation, with a deterministic fallback on every path.
+- ✅ **Real `--dry-run`**, `check`, `analyze`, `translate` commands.
+- 🧪 Golden-file + unit + filesystem test suite.
+
+### Fixed
+
+- Config files (and `--config`) are now honoured (previously silently discarded).
+- Expression-body arrow components now get the hook (previously wrapped text
+  without binding `t`, causing `t is not defined`).
+- Hooks are placed on components, not on `.map()` callbacks or utility functions.
+- No more false positives: comparison operators, string literals and comments
+  are never transformed.
+
+### Changed / Removed
+
+- **Removed** the `i18n-backup/` code-copying behaviour in favour of git-aware
+  safety (dirty-tree warning + dry-run preview).
+- **Removed** the `--transformer` flag (single unified engine).
+- **Removed** the empty `extract`/`stats` stub commands and dropped `ts-morph`.
+- Class components are now honestly skipped with a warning (no fake support).
+
 ## [1.0.0] - 2025-08-06
 
 ### Added
